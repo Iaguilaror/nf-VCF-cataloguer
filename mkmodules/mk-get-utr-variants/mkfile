@@ -1,0 +1,26 @@
+### mk-get-utr-variants ###
+# mkfile script with dependency rules for:
+#	1. To separate variants found in UTR regions.
+## For more information about 'mk' dependency control, see https://9fans.github.io/plan9port/man/man1/mk.html
+
+## Define shell command line which will be used to run scripts.
+MKSHELL=/bin/bash
+
+%.SEPARATE_UTR:QV: %.utr.vcf
+	echo "[DEBUG] Done separating variants in 5' and 3' utr regions"
+
+## Filter vep is a VEP tool described here: https://www.ensembl.org/info/docs/tools/vep/script/vep_filter.html
+# -i, input file
+# -o, output file
+# --vcf_info_field, VEP finds annotations in ANN field
+# -filter, VEP finds variants by its consequence. Keeps only 3 prime or 5 prime variants.
+# --force_overwrite, forces an ouput file
+%.utr.vcf:Q: %.vcf
+	echo "[DEBUG] extracting utr variants for $prereq"
+	filter_vep \
+		-i $prereq \
+		-o $target.build \
+		--vcf_info_field ANN \
+		-filter "Consequence is 3_prime_UTR_variant or Consequence is 5_prime_UTR_variant" \
+		--force_overwrite \
+	&& mv $target.build $target

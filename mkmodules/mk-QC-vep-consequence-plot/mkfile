@@ -1,0 +1,29 @@
+### mk-QC-vep-consequence-plot ###
+# mkfile script with dependency rules for:
+#	1. To make plots of the consequences of each category of variants.
+## For more information about 'mk' dependency control, see https://9fans.github.io/plan9port/man/man1/mk.html
+
+## Define shell command line which will be used to run scripts.
+MKSHELL=/bin/bash
+
+%.vep_consequence.png:Q: %.tsv.tmp
+	# This block of code uses plotter.R to make plots of the consequences of each input file.
+	echo "[DEBUG] plotting vep consequences for $prereq"
+	## check if file is empty
+	nlines=$(cat $prereq | head | wc -l)
+	## if the file only has a header... (nlines == 1)
+	if [ "$nlines" -eq 1 ]
+	## then create an empty output file
+	then
+		> $target.empty
+	## else, use Rscript to summarize and plot data
+	else
+		Rscript plotter.R $prereq $target.build \
+		&& mv $target.build $target
+	fi
+
+%.tsv.tmp:Q: %.tsv.gz
+	# Keeping only ID and consequence columns.
+	echo "[DEBUG] keeping only useful columns"
+	zcat $prereq | cut -f3,12 > $target.build \
+	&& mv $target.build $target

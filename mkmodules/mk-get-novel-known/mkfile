@@ -1,0 +1,42 @@
+### mk-get-novel-known ###
+# mkfile script with dependency rules for:
+#	1. To separate known variants that are reported by dbSNP.
+# 2. To separate unknown variants.
+# For more information about dbSNP, see https://www.ncbi.nlm.nih.gov/snp/
+## For more information about 'mk' dependency control,
+## see https://9fans.github.io/plan9port/man/man1/mk.html
+
+## Define shell command line which will be used to run scripts.
+MKSHELL=/bin/bash
+
+%.SEPARATE_NOVEL:QV: %.dbSNPnovel.vcf %.dbSNPknown.vcf
+	echo "[DEBUG] Done separating variants by novel/known"
+
+
+%.dbSNPnovel.vcf:Q: %.vcf
+	# Use bcftools to manipulate variants in the Variant Call Format (VCF) (input).
+	## For more information about 'bcftools' commands,
+	## see https://samtools.github.io/bcftools/bcftools.html
+	## For more information about the VCF format, please go to the next link:
+	## https://www.internationalgenome.org/wiki/Analysis/Variant%20Call%20Format/vcf-variant-call-format-version-40/
+	# grep -v inverts the match. This output will be the non-matching lines with a rsID.
+	echo "[DEBUG] extracting novel variants for $prereq"
+	bcftools view -h $prereq > $target.build
+	bcftools view -H $prereq \
+	| grep -v "rs[0-9]*" >> $target.build || true \
+	&& mv $target.build $target
+
+%.dbSNPknown.vcf:Q: %.vcf
+	# Use bcftools to manipulate variants in the Variant Call Format (VCF) (input).
+	## For more information about 'bcftools' commands,
+	## see https://samtools.github.io/bcftools/bcftools.html
+	## For more information about the VCF format, please go to the next link:
+	## https://www.internationalgenome.org/wiki/Analysis/Variant%20Call%20Format/vcf-variant-call-format-version-40/
+	## since dbSNP annotation seems to be abit off, we are going to parse manually the vcf body
+	## in search of lines with "rs[0-9]*"
+	# grep will find any rsID in the body of vcf, and it will be sent to target file
+	echo "[DEBUG] extracting known variants $prereq"
+	bcftools view -h $prereq > $target.build
+	bcftools view -H $prereq \
+	| grep "rs[0-9]*" >> $target.build || true \
+	&& mv $target.build $target

@@ -1,0 +1,42 @@
+### mk-get-clinvar-omim ###
+# mkfile script with dependency rules for:
+#	1. To separate variants annotated by clinvar.
+# 2. To extract OMIM variants.
+## For more information about 'mk' dependency control, see https://9fans.github.io/plan9port/man/man1/mk.html
+## For more information about ClinVar, see https://www.ncbi.nlm.nih.gov/clinvar/docs/ftp_primer/
+
+## Define shell command line which will be used to run scripts.
+MKSHELL=/bin/bash
+
+%.SEPARATE_CLINVAR:QV: %.clinvar.vcf %.OMIM.vcf
+	echo "[DEBUG] Done separating variants by clinvar annotated"
+## Filter vep is a VEP tool described here: https://www.ensembl.org/info/docs/tools/vep/script/vep_filter.html
+# -i, input file
+# -o, output file
+# --vcf_info_field, VEP finds annotations in ANN field
+# -filter, VEP finds variants where it matches with "clinvar"
+# --force_overwrite, forces an ouput file
+%.clinvar.vcf:Q: %.vcf
+	echo "[DEBUG] extracting Clinvar variants for $prereq"
+	filter_vep \
+		-i $prereq \
+		-o $target.build \
+		--vcf_info_field ANN \
+		-filter "clinvar" \
+		--force_overwrite \
+	&& mv $target.build $target
+
+## Could not get to work filter vep "match" operator
+# combining filtervep and grep to search for OMIM data
+# -i, input file
+# --vcf_info_field, VEP finds annotations in ANN field
+# -filter, VEP finds variants where it finds a match with "clinvar"
+# grep finds associated to OMIM
+%.OMIM.vcf:Q: %.vcf
+	echo "[DEBUG] extracting OMIM variants for $prereq"
+	filter_vep \
+		-i $prereq \
+		--vcf_info_field ANN \
+		-filter "clinvar" \
+	| grep -e "^#" -e "OMIM:" > $target.build || true \
+	&& mv $target.build $target

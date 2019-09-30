@@ -1,0 +1,28 @@
+### mk-separate-lowEAS-lowEUR ###
+# mkfile script with dependency rules for:
+#	1. To separate variants with low allele frequency in EAS gnomAD population.
+# 2. To separate variants with low allele frequency in EUR gnomAD population.
+## For more information about 'mk' dependency control, see https://9fans.github.io/plan9port/man/man1/mk.html
+## For more information abour gnomAD, see https://gnomad.broadinstitute.org/about.
+
+## Define shell command line which will be used to run scripts.
+MKSHELL=/bin/bash
+
+%.SEPARATE_LOWEAS_LOWEUR:QV: %.lowEAS_lowEUR.vcf
+	echo "[DEBUG] Done separating variants by EAs and EUR frequencies compated to AF_mx"
+
+## Filter vep is a VEP tool described here: https://www.ensembl.org/info/docs/tools/vep/script/vep_filter.html
+# -i, input file
+# -o, output file
+# --vcf_info_field, VEP finds annotations in ANN field
+# -filter, VEP finds variants where mx allele frequency is more than 5% and equal or less than 5% in EAS gnomAD population and NFE gnomAD population.
+# --force_overwrite, forces an ouput file
+%.lowEAS_lowEUR.vcf:Q: %.vcf
+	echo "[DEBUG] extracting common MX but low EAS and low EUR variants for $prereq"
+	filter_vep \
+		-i $prereq \
+		-o $target.build \
+		--vcf_info_field ANN \
+		-filter "AF_mx > 0.05 and gnomADg_AF_eas <= 0.05 and gnomADg_AF_nfe <= 0.05" \
+		--force_overwrite \
+	&& mv $target.build $target

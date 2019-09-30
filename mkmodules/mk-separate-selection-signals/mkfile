@@ -1,0 +1,28 @@
+### mk-separate-selection-signals ###
+# mkfile script with dependency rules for:
+#	1. To separate variants on selection, with a reference ID list of selection signals.
+# 2. To Sort output file.
+## For more information about 'mk' dependency control, see https://9fans.github.io/plan9port/man/man1/mk.html
+
+## Define shell command line which will be used to run scripts.
+MKSHELL=/bin/bash
+
+%.SEPARATE_BY_SELECTION_SIGNALS:QV: %.selection_signals.vcf
+	echo "[DEBUG] Done separating variants by selection signals"
+
+%.selection_signals.vcf:Q: $RSID_LIST %.vcf
+	echo "[DEBUG] filtering vcf file in search of rsIDs"
+	awk '
+		###
+		# Definition of input and output Field Separator as tab
+		BEGIN {FS=OFS="\t"}
+		###
+		# Main code block
+		## load index from $RSID_LIST
+		NR==FNR{ rsIDindex[$1]=$1 }
+		## print header of vcf file
+  	NR!=FNR && $1 ~ /^#/ { print $0 }
+		## print vcf lines where the rsID field value is present in the previously built rsID index
+		NR!=FNR && $3==rsIDindex[$3]{ print $0 }
+  ' $prereq | bcftools sort --temp-dir tmp/ > $target.build \
+  && mv $target.build $target

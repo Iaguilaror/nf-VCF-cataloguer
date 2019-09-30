@@ -1,0 +1,26 @@
+### mk-get-miRNA-variants ###
+# mkfile script with dependency rules for:
+#	1. To separate variants found in miRBase. For more information about miRBase, see http://www.mirbase.org/
+## For more information about 'mk' dependency control, see https://9fans.github.io/plan9port/man/man1/mk.html
+
+## Define shell command line which will be used to run scripts.
+MKSHELL=/bin/bash
+
+%.SEPARATE_miRNA:QV: %.miRNA.vcf
+	echo "[DEBUG] Done separating variants by miRNA affected"
+
+## Filter vep is a VEP tool described here: https://www.ensembl.org/info/docs/tools/vep/script/vep_filter.html
+# -i, input file
+# -o, output file
+# --vcf_info_field, VEP finds annotations in ANN field
+# -filter, VEP finds variants where it matches with "miRBase"
+# --force_overwrite, forces an ouput file
+%.miRNA.vcf:Q: %.vcf
+	echo "[DEBUG] extracting miRNA variants for $prereq"
+	filter_vep \
+		-i $prereq \
+		-o $target.build \
+		--vcf_info_field ANN \
+		-filter "miRBase" \
+		--force_overwrite \
+	&& mv $target.build $target

@@ -1,0 +1,16 @@
+### mk-filter-vcf ###
+# mkfile script with dependency rules for:
+#	1. Filtering positions where AN assigned value (total number of alleles in called genotypes) is true.
+## For more information about 'mk' dependency control, see https://9fans.github.io/plan9port/man/man1/mk.html
+
+## Define shell command line which will be used to run scripts.
+MKSHELL=/bin/bash
+
+## Use bcftools to manipulate variants in the compressed Variant Call Format (VCF) (input).
+## For more information about 'bcftools' commands, see https://samtools.github.io/bcftools/bcftools.html
+## For more information about the VCF format, please go to the next link: https://www.internationalgenome.org/wiki/Analysis/Variant%20Call%20Format/vcf-variant-call-format-version-40/
+%.filtered.vcf:Q: %.vcf.gz
+	## To filter the VCF, view --include prints sites for which "AN>=$AN_CUTOFF" is true.
+	echo "[DEBUG] filtering vcf using bcftools view"
+	bcftools view --include "AN>=$AN_CUTOFF" $prereq > $target.build \
+	&& mv $target.build $target

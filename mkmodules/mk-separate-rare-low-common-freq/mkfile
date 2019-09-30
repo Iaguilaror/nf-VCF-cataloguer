@@ -1,0 +1,47 @@
+### mk-separate-rare-low-common-freq ###
+# mkfile script with dependency rules for:
+#	1. To separate variants by its allele frequency category.
+# 2. To separate variants in common frequency.
+# 3. To separate variants in low frequency.
+# 4. To separate variants in rare frequency.
+## For more information about 'mk' dependency control, see https://9fans.github.io/plan9port/man/man1/mk.html
+
+## Define shell command line which will be used to run scripts.
+MKSHELL=/bin/bash
+
+%.SEPARATE_BY_FREQ:QV: %.rare_freq.vcf %.low_freq.vcf %.common_freq.vcf
+	## Give a message when having the three separated vcfs.
+	echo "[DEBUG] Done separating variants by frequency"
+
+%.rare_freq.vcf:Q: %.vcf
+	## Use bcftools to manipulate variants in the compressed Variant Call Format (VCF) (input).
+	## For more information about 'bcftools' commands, see https://samtools.github.io/bcftools/bcftools.html
+	## For more information about the VCF format, please go to the next link: https://www.internationalgenome.org/wiki/Analysis/Variant%20Call%20Format/vcf-variant-call-format-version-40/
+	## Separate rare freq variants
+	# Use '--min-af' and '--max-af' to set the range of minimum and maximum allele frequency to print.
+	# AF is 0 - 0.01, for rare frequency variants
+	echo "[DEBUG] extracting rare variants"
+	bcftools view --min-af 0 --max-af 0.01 $prereq > $target.build \
+	&& mv $target.build $target
+
+%.low_freq.vcf:Q: %.vcf
+	## Use bcftools to manipulate variants in the compressed Variant Call Format (VCF) (input).
+	## For more information about 'bcftools' commands, see https://samtools.github.io/bcftools/bcftools.html
+	## For more information about the VCF format, please go to the next link: https://www.internationalgenome.org/wiki/Analysis/Variant%20Call%20Format/vcf-variant-call-format-version-40/
+	## Separate low freq variants
+	# Use '--min-af' and '--max-af' to set the range of minimum and maximum allele frequency to print.
+	# AF is 0.01 - 0.05, for low frequency variants
+	echo "[DEBUG] extracting low freq variants"
+	bcftools view --min-af 0.010001 --max-af 0.05 $prereq > $target.build \
+	&& mv $target.build $target
+
+%.common_freq.vcf:Q: %.vcf
+	## Use bcftools to manipulate variants in the compressed Variant Call Format (VCF) (input).
+	## For more information about 'bcftools' commands, see https://samtools.github.io/bcftools/bcftools.html
+	## For more information about the VCF format, please go to the next link: https://www.internationalgenome.org/wiki/Analysis/Variant%20Call%20Format/vcf-variant-call-format-version-40/
+	## Separate common freq variants
+	# Use '--min-af' and '--max-af' to set the range of minimum and maximum allele frequency to print.
+	# AF is 0.05 - 1, for common variants.
+	echo "[DEBUG] extracting common freq variants"
+	bcftools view --min-af 0.050001 --max-af 1 $prereq > $target.build \
+	&& mv $target.build $target

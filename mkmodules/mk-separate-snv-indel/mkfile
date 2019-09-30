@@ -1,0 +1,27 @@
+### mk-separate-snv-indel ###
+# mkfile script with dependency rules for:
+#	1. To keep only indel variants.
+# 2. To keep only snp variants.
+## For more information about 'mk' dependency control, see https://9fans.github.io/plan9port/man/man1/mk.html
+
+## Define shell command line which will be used to run scripts.
+MKSHELL=/bin/bash
+
+%.snv.vcf:Q: %.indel.vcf %.vcf
+	## Use bcftools to manipulate variants in the compressed Variant Call Format (VCF) (input).
+	## For more information about 'bcftools' commands, see https://samtools.github.io/bcftools/bcftools.html
+	## For more information about the VCF format, please go to the next link: https://www.internationalgenome.org/wiki/Analysis/Variant%20Call%20Format/vcf-variant-call-format-version-40/
+	## Separate snp variants
+	# Use --types snps to only keep indels
+	echo "[DEBUG] extracting SNVs"
+	bcftools view --types snps $stem.vcf > $target.build \
+	&& mv $target.build $target
+
+%.indel.vcf:Q: %.vcf
+	## Use bcftools to manipulate variants in the compressed Variant Call Format (VCF) (input).
+	## For more information about 'bcftools' commands, see https://samtools.github.io/bcftools/bcftools.html
+	## For more information about the VCF format, please go to the next link: https://www.internationalgenome.org/wiki/Analysis/Variant%20Call%20Format/vcf-variant-call-format-version-40/
+	## Separate indel variants
+	# Use --types indels to only keep indels
+	bcftools view --types indels $prereq > $target.build \
+	&& mv $target.build $target

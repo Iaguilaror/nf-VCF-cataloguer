@@ -1,0 +1,32 @@
+### mk-count-variants ###
+# mkfile script with dependency rules for:
+# 1. To count indel variants through the "summary_cleaner.R" tool
+#	2. To count SNV variants through the "summary_cleaner.R" tool.
+# 3. To make a summary of the number of variants of each type (SNVs and indels) that are in different data bases.
+# 4. To make a summary of the number of variants of each type (SNVs and indels) in different frequency (low, rare and common).
+# 5. To know the number of selection signals that are harbored in different data bases.
+## For more information about 'mk' dependency control, see https://9fans.github.io/plan9port/man/man1/mk.html
+
+## Define shell command line which will be used to run scripts.
+MKSHELL=/bin/bash
+
+%.snv-variants_summary.tsv:Q: %.variants_summary.tmp
+	# summary_cleaner.R is a tool for counting variants from different types and subgroups.
+	echo "[DEBUG] cleaning summary data in R for $prereq"
+	echo "[DEBUG] stem is $stem"
+	Rscript --vanilla summary_cleaner.R $prereq $stem $target \
+	&& rm $prereq
+
+%.variants_summary.tmp:Q:
+	# Counting the total number of lines without the header to build a tmp file
+	# with the number of variants of each ".tsv.gz" input
+	echo "[DEBUG] getting raw counts"
+	## start basic header
+	echo "variant_subgroup counts" | tr " " "\t" > $target.build
+	for variants_file in $(ls $stem.*.tsv.gz)
+	do
+		echo "[...] counting variants in $variants_file"
+		number_of_lines=$(zcat $variants_file | wc -l)
+		echo "$variants_file $(( $number_of_lines -1 ))" | tr " " "\t" >> $target.build
+	done \
+	&& mv $target.build $target
