@@ -25,5 +25,5 @@ MKSHELL=/bin/bash
 %.tsv.tmp:Q: %.tsv.gz
 	# Keeping only ID and consequence columns.
 	echo "[DEBUG] keeping only useful columns"
-	zcat $prereq | cut -f3,12 > $target.build \
+	zcat $prereq | cut -f3,11 > $target.build \
 	&& mv $target.build $target

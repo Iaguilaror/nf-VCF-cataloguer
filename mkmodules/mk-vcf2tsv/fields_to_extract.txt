@@ -9,6 +9,5 @@ DP
 # QUAL
 # FILTER
 # INFO
-AF_mx
-nhomalt_mx
+AF
 ANN
