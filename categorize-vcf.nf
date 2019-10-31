@@ -9,7 +9,7 @@ The MORETT LAB presents...
 
 ==================================================================
 Version: 0.0.1
-Project repository: https://bitbucket.org/morett_lab/nf-vcf-table-description/src
+Project repository: https://github.com/Iaguilaror/nf-vcf-cataloguer.git
 ==================================================================
 Authors:
 
@@ -18,9 +18,11 @@ Authors:
 
 - Bioinformatics Development
  Israel Aguilar-Ordonez (iaguilaror@gmail)
+ Judith Ballesteros-Villascán (judith.vballesteros@gmail)
 
 - Nextflow Port
  Israel Aguilar-Ordonez (iaguilaror@gmail)
+ Judith Ballesteros-Villascán (judith.vballesteros@gmail)
 
 =============================
 Pipeline Processes In Brief:

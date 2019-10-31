@@ -1,25 +1,25 @@
-nf-vcf-table-description
+nf-vcf-cataloguer
 ===
-'nf-vcf-table-description' is a tool, implemented in Nextflow, that generates a general table description in tsv format of the description of each category and subgroup of a vcf with the extended annotation made by VEP. Furthermore it plots each subset consequences of variants.
+'nf-vcf-cataloguer' is a tool, implemented in Nextflow, that generates a general table description in tsv format of the description of each category and subgroup of a vcf with the extended annotation made by VEP. Furthermore it plots each subset consequences of variants.
 
 ---
 
 ### Features
   **-v 0.0.1**
 
-* nf-vcf-table-description supports vcf compressed files as input.
+* nf-vcf-cataloguer supports vcf compressed files as input.
 * Results include a general table description in tsv and images of each subgroup consequences.
 * Scalability and reproducibility via a Nextflow-based framework.
-* nf-vcf-table-description obtains GeneHancer variants annotation converted to tsv format.
-* nf-vcf-table-description separates rare, low and common variants annotation converted to tsv format using the gnomAD fields from nf-vcf-table-description.
-* nf-vcf-table-description separates GWAS Catalog variants annotation converted to tsv format.
-* nf-vcf-table-description separates ClinVar and OMIM variants annotation converted to tsv format.
-* nf-vcf-table-description separates miRBase variants annotation converted to tsv format.
-* nf-vcf-table-description separates PGKB Drug variants annotation converted to tsv format.
-* nf-vcf-table-description separates dbsnp known and novel ones.
-* nf-vcf-table-description separates coding region variants and utr region variants.
-* nf-vcf-table-description separates indels and snvs.
-* nf-vcf-table-description separates selection signals with rsIDs list obtained from a selection analysis.
+* nf-vcf-cataloguer obtains GeneHancer variants annotation converted to tsv format.
+* nf-vcf-cataloguer separates rare, low and common variants annotation converted to tsv format using the gnomAD fields from nf-vcf-cataloguer.
+* nf-vcf-cataloguer separates GWAS Catalog variants annotation converted to tsv format.
+* nf-vcf-cataloguer separates ClinVar and OMIM variants annotation converted to tsv format.
+* nf-vcf-cataloguer separates miRBase variants annotation converted to tsv format.
+* nf-vcf-cataloguer separates PGKB Drug variants annotation converted to tsv format.
+* nf-vcf-cataloguer separates dbsnp known and novel ones.
+* nf-vcf-cataloguer separates coding region variants and utr region variants.
+* nf-vcf-cataloguer separates indels and snvs.
+* nf-vcf-cataloguer separates selection signals with rsIDs list obtained from a selection analysis.
 
 ---
 
@@ -27,7 +27,7 @@ nf-vcf-table-description
 #### Compatible OS*:
 * [Ubuntu 18.04.03 LTS](http://releases.ubuntu.com/18.04/)
 
-\* nf-vcf-table-description may run in other UNIX based OS and versions, but testing is required.
+\* nf-vcf-cataloguer may run in other UNIX based OS and versions, but testing is required.
 
 #### Software:
 | Requirement | Version  | Required Commands * |
@@ -46,15 +46,15 @@ nf-vcf-table-description
 ---
 
 ### Installation
-Download nf-vcf-table-description from Github repository:  
+Download nf-vcf-cataloguer from Github repository:  
 ```
-git clone https://jballesterosv@bitbucket.org/morett_lab/nf-vcf-table-description.git ???
+git clone https://github.com/Iaguilaror/nf-vcf-cataloguer.git
 ```
 
 ---
 
 #### Test
-To test nf-vcf-table-description's execution using test data, run:
+To test nf-vcf-cataloguer's execution using test data, run:
 ```
 ./runtest.sh
 ```
@@ -66,15 +66,15 @@ Basic pipeline TEST SUCCESSFUL: Basic pipeline TEST SUCCESSFUL
 ======
 ```
 
-nf-vcf-table-description results for test data should be in the following file:
+nf-vcf-cataloguer results for test data should be in the following file:
 ```
-nf-vcf-table-description/test/results/catgorizeVCF-results
+nf-vcf-cataloguer/test/results/catgorizeVCF-results
 ```
 
 ---
 
 ### Usage
-To run nf-vcf-table-description go to the pipeline directory and execute:
+To run nf-vcf-cataloguer go to the pipeline directory and execute:
 ```
 nextflow run categorize-vcf.nf --vcf <path to input 1> [--output_dir path to results] [-resume]
 ```
@@ -140,9 +140,9 @@ TSV outputs have columns that were added in VEPextended. For mor info about fiel
 
 ---
 
-### nf-vcf-table-description directory structure
+### nf-vcf-cataloguer directory structure
 ````
-nf-vcf-table-description/						## Pipeline main directory.
+nf-vcf-cataloguer/						## Pipeline main directory.
 ├── categorize-vcf.nf				## Flow control script of this pipeline.
 ├── launchers			     		## Directory for different scripts to run categorize-vcf.nf
 │   ├── 78G_at_castillo.sh
@@ -176,7 +176,7 @@ nf-vcf-table-description/						## Pipeline main directory.
 ````
 
 #### References
-Under the hood nf-vcf-table-description separates variants from different dabatases and uses some coding tools, please include the following ciations in your work:
+Under the hood nf-vcf-cataloguer separates variants from different dabatases and uses some coding tools, please include the following ciations in your work:
 
 * Fishilevich, S., Nudel, R., Rappaport, N., Hadar, R., Plaschkes, I., Iny Stein, T., ... & Lancet, D. (2017). GeneHancer: genome-wide integration of enhancers and target genes in GeneCards. Database, 2017.
 * Karczewski, K. J., Francioli, L. C., Tiao, G., Cummings, B. B., Alföldi, J., Wang, Q., ... & Gauthier, L. D. (2019). Variation across 141,456 human exomes and genomes reveals the spectrum of loss-of-function intolerance across human protein-coding genes. BioRxiv, 531210.
