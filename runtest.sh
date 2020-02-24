@@ -1,7 +1,7 @@
 echo -e "======\n Testing NF execution \n======" \
 && rm -rf test/results/ \
 && nextflow run categorize-vcf.nf \
-	--vcf test/data/samplechr21_76g_PASS_ANeqorgt150_autosomes_and_XY.filtered.nhomalt.filtered.untangled_multiallelics.anno_dbSNP_vep.vcf.gz \
+	--vcf test/data/samplechr21.vcf.gz \
 	--output_dir test/results \
 	-resume \
 	-with-report test/results/`date +%Y%m%d_%H%M%S`_report.html \
